@@ -70,6 +70,7 @@ export default ({ entry, provided = [] }) => ({
     }),
   ],
   optimization: {
+    sideEffects: true,
     concatenateModules: true,
     portableRecords: true,
     moduleIds: 'hashed',

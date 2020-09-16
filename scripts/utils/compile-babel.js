@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const shell = require('shelljs');
 
-function getCommand(watch) {
+function getCommand(watch, dir) {
   // Compile angular with tsc
   if (process.cwd().includes(path.join('app', 'angular'))) {
     return '';
@@ -13,7 +13,7 @@ function getCommand(watch) {
 
   const args = [
     './src',
-    '--out-dir ./dist',
+    `--out-dir ${dir}`,
     `--config-file ${path.resolve(__dirname, '../../.babelrc.js')}`,
     `--copy-files`,
   ];
@@ -46,7 +46,74 @@ function handleExit(code, stderr, errorCallback) {
   }
 }
 
-function babelify(options = {}) {
+async function run({ watch, dir, silent, errorCallback }) {
+  return new Promise((resolve, reject) => {
+    const command = getCommand(watch, dir);
+
+    if (command !== '') {
+      const child = shell.exec(command, {
+        async: true,
+        silent,
+        env: { ...process.env, BABEL_ESM: dir.includes('esm') },
+      });
+      let stderr = '';
+
+      child.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      child.stdout.on('data', (data) => {
+        console.log(data);
+      });
+
+      child.on('exit', (code) => {
+        resolve();
+        handleExit(code, stderr, errorCallback);
+      });
+    } else {
+      resolve();
+    }
+  });
+}
+
+const cjsAndEsmPackage = [
+  /addons\/a11y$/,
+  /addons\/actions$/,
+  /addons\/backgrounds$/,
+  /addons\/controls$/,
+  /addons\/cssresources$/,
+  /addons\/design-assets$/,
+  /addons\/docs$/,
+  /addons\/events$/,
+  /addons\/google-analytics$/,
+  /addons\/graphql$/,
+  /addons\/jest$/,
+  /addons\/knobs$/,
+  /addons\/links$/,
+  /addons\/queryparams$/,
+  /addons\/storysource$/,
+  /addons\/toolbars$/,
+  /addons\/viewport$/,
+
+  /lib\/addons$/,
+  /lib\/api$/,
+  /lib\/channel-postmessage$/,
+  /lib\/channel-websocket$/,
+  /lib\/channels$/,
+  /lib\/client-api$/,
+  /lib\/client-logger$/,
+  /lib\/components$/,
+  /lib\/core$/,
+  /lib\/core-events$/,
+  /lib\/router$/,
+  /lib\/source-loader$/,
+  /lib\/theming$/,
+  /lib\/ui$/,
+];
+
+async function babelify(options = {}) {
+  const modulePath = path.resolve('./');
+  const modules = cjsAndEsmPackage.some((regex) => modulePath.match(regex));
   const { watch = false, silent = true, errorCallback } = options;
 
   if (!fs.existsSync('src')) {
@@ -56,10 +123,21 @@ function babelify(options = {}) {
     return;
   }
 
-  const command = getCommand(watch);
-  if (command !== '') {
-    const { code, stderr } = shell.exec(command, { silent });
-    handleExit(code, stderr, errorCallback);
+  const dir = (modules && './dist/cjs') || './dist';
+
+  if (watch) {
+    await Promise.all([
+      run({ watch, dir, silent, errorCallback }),
+      modules ? run({ watch, dir: './dist/esm', silent, errorCallback }) : Promise.resolve(),
+    ]);
+  } else {
+    // cjs
+    await run({ dir, silent, errorCallback });
+
+    if (modules) {
+      // esm
+      await run({ dir: './dist/esm', silent, errorCallback });
+    }
   }
 }
 

@@ -17,7 +17,9 @@
     "directory": "addons/docs"
   },
   "license": "MIT",
-  "main": "dist/public_api.js",
+  "sideEffects": false,
+  "main": "dist/cjs/public_api.js",
+  "module": "dist/esm/public_api.js",
   "types": "dist/public_api.d.ts",
   "files": [
     "dist/**/*",
@@ -32,17 +34,17 @@
     "README.md",
     "*.js",
     "*.d.ts",
-    "ts3.5/**/*"
+    "ts3.7/**/*"
   ],
   "scripts": {
     "createDlls": "node -r esm ./scripts/createDlls.js",
     "prepare": "node ../../scripts/prepare.js"
   },
   "dependencies": {
-    "@babel/generator": "^7.9.6",
-    "@babel/parser": "^7.9.6",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/preset-env": "^7.9.6",
+    "@babel/generator": "^7.11.5",
+    "@babel/parser": "^7.11.5",
+    "@babel/plugin-transform-react-jsx": "^7.10.4",
+    "@babel/preset-env": "^7.11.5",
     "@jest/transform": "^26.0.0",
     "@mdx-js/loader": "^1.5.1",
     "@mdx-js/mdx": "^1.5.1",
@@ -66,6 +68,7 @@
     "doctrine": "^3.0.0",
     "escodegen": "^1.12.0",
     "fast-deep-equal": "^3.1.1",
+    "glob": "^7.1.6",
     "global": "^4.3.2",
     "html-tags": "^3.1.0",
     "js-string-escape": "^1.0.1",
@@ -83,7 +86,7 @@
   },
   "devDependencies": {
     "@angular/core": "^9.1.0",
-    "@babel/core": "^7.9.6",
+    "@babel/core": "^7.11.5",
     "@emotion/core": "^10.0.20",
     "@emotion/styled": "^10.0.17",
     "@storybook/react": "6.1.0-alpha.10",
@@ -110,7 +113,7 @@
     "require-from-string": "^2.0.2",
     "rxjs": "^6.5.4",
     "styled-components": "^5.0.1",
-    "terser-webpack-plugin": "^3.0.0",
+    "terser-webpack-plugin": "^4.0.0",
     "tmp": "^0.2.1",
     "tslib": "^2.0.0",
     "web-component-analyzer": "^1.0.3",
@@ -118,7 +121,7 @@
     "zone.js": "^0.10.2"
   },
   "peerDependencies": {
-    "@babel/core": "^7.0.0-0",
+    "@babel/core": "^7.11.5",
     "@storybook/vue": "6.1.0-alpha.10",
     "babel-loader": "^8.0.0",
     "sveltedoc-parser": "^3.0.4",
@@ -144,9 +147,9 @@
   },
   "gitHead": "57798a108e183d97f94fd4cc396e45e1d4b04d23",
   "typesVersions": {
-    "<=3.5": {
+    "<3.8": {
       "*": [
-        "ts3.5/*"
+        "ts3.7/*"
       ]
     }
   }

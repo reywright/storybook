@@ -1,1 +1,1 @@
-module.exports = require('../dist/frameworks/common/preset');
+module.exports = require('../common-preset');

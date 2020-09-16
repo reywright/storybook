@@ -1,7 +1,8 @@
+// @ts-ignore
 import { readStory } from './dependencies-lookup/readAsObject';
 
-export function transform(inputSource) {
-  return readStory(this, inputSource).then((sourceObject) => {
+export function transform(inputSource: string) {
+  return readStory(this, inputSource).then((sourceObject: any) => {
     // if source-loader had trouble parsing the story exports, return the original story
     // example is
     // const myStory = () => xxx

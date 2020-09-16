@@ -1,4 +1,3 @@
+export * from './extract-source';
 // @ts-ignore
-import { transform } from './build';
-
-export default transform;
+export { transform as default } from './build';
